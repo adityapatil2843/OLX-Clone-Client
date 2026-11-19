@@ -1,7 +1,11 @@
 /**
- * Shared Type Definitions - Phase 0
- * Contains route metadata and placeholder page interfaces.
+ * Shared Type Definitions - Phase 1
  */
+
+export * from './listing';
+export * from './reel';
+export * from './category';
+export * from './api';
 
 export type RouteCategory = 'public' | 'auth' | 'account' | 'admin';
 

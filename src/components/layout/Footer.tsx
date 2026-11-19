@@ -1,66 +1,93 @@
 import React from 'react';
 import Link from 'next/link';
+import { ShieldCheck, Video, MapPin } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="mt-auto border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400">
-      <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-xs">
+    <footer className="mt-auto border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 pb-24 md:pb-0">
+      <div className="max-w-7xl mx-auto px-4 py-10 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-xs">
+          {/* Popular Categories */}
           <div>
-            <h5 className="font-semibold text-zinc-900 dark:text-zinc-200 mb-2">Public Routes</h5>
-            <ul className="space-y-1">
-              <li><Link href="/" className="hover:underline">Home</Link></li>
-              <li><Link href="/reels" className="hover:underline">Reels</Link></li>
-              <li><Link href="/search" className="hover:underline">Search</Link></li>
-              <li><Link href="/categories/cars" className="hover:underline">Category: Cars</Link></li>
-              <li><Link href="/listing/123" className="hover:underline">Listing #123</Link></li>
-              <li><Link href="/business/example-store" className="hover:underline">Business Store</Link></li>
-              <li><Link href="/jobs" className="hover:underline">Jobs</Link></li>
-              <li><Link href="/services" className="hover:underline">Services</Link></li>
+            <h5 className="font-bold text-zinc-900 dark:text-zinc-200 uppercase tracking-wider mb-3">
+              Popular Categories
+            </h5>
+            <ul className="space-y-2">
+              <li><Link href="/categories/vehicles" className="hover:text-orange-600 transition-colors">Cars & Motorbikes</Link></li>
+              <li><Link href="/categories/mobiles" className="hover:text-orange-600 transition-colors">Mobile Phones & Tablets</Link></li>
+              <li><Link href="/categories/electronics" className="hover:text-orange-600 transition-colors">Laptops & Electronics</Link></li>
+              <li><Link href="/categories/properties" className="hover:text-orange-600 transition-colors">Flats & Houses for Sale</Link></li>
+              <li><Link href="/categories/furniture" className="hover:text-orange-600 transition-colors">Home & Office Furniture</Link></li>
+              <li><Link href="/jobs" className="hover:text-orange-600 transition-colors">Jobs & Hiring</Link></li>
+              <li><Link href="/services" className="hover:text-orange-600 transition-colors">Home Services & Movers</Link></li>
             </ul>
           </div>
 
+          {/* Popular Cities in India */}
           <div>
-            <h5 className="font-semibold text-zinc-900 dark:text-zinc-200 mb-2">Auth Placeholders</h5>
-            <ul className="space-y-1">
-              <li><Link href="/login" className="hover:underline">Login</Link></li>
-              <li><Link href="/register" className="hover:underline">Register</Link></li>
-              <li><Link href="/verify-otp" className="hover:underline">Verify OTP</Link></li>
+            <h5 className="font-bold text-zinc-900 dark:text-zinc-200 uppercase tracking-wider mb-3">
+              Popular Locations
+            </h5>
+            <ul className="space-y-2">
+              <li className="flex items-center gap-1.5"><MapPin className="w-3 h-3 text-orange-600" /><Link href="/search?city=Mumbai" className="hover:text-orange-600 transition-colors">Mumbai, Maharashtra</Link></li>
+              <li className="flex items-center gap-1.5"><MapPin className="w-3 h-3 text-orange-600" /><Link href="/search?city=Delhi" className="hover:text-orange-600 transition-colors">Delhi NCR</Link></li>
+              <li className="flex items-center gap-1.5"><MapPin className="w-3 h-3 text-orange-600" /><Link href="/search?city=Bangalore" className="hover:text-orange-600 transition-colors">Bangalore, Karnataka</Link></li>
+              <li className="flex items-center gap-1.5"><MapPin className="w-3 h-3 text-orange-600" /><Link href="/search?city=Hyderabad" className="hover:text-orange-600 transition-colors">Hyderabad, Telangana</Link></li>
+              <li className="flex items-center gap-1.5"><MapPin className="w-3 h-3 text-orange-600" /><Link href="/search?city=Pune" className="hover:text-orange-600 transition-colors">Pune, Maharashtra</Link></li>
+              <li className="flex items-center gap-1.5"><MapPin className="w-3 h-3 text-orange-600" /><Link href="/search?city=Chennai" className="hover:text-orange-600 transition-colors">Chennai, Tamil Nadu</Link></li>
             </ul>
           </div>
 
+          {/* Marketplace Features */}
           <div>
-            <h5 className="font-semibold text-zinc-900 dark:text-zinc-200 mb-2">Account Placeholders</h5>
-            <ul className="space-y-1">
-              <li><Link href="/sell" className="hover:underline">Sell / Post Ad</Link></li>
-              <li><Link href="/chats" className="hover:underline">Chats</Link></li>
-              <li><Link href="/favourites" className="hover:underline">Favourites</Link></li>
-              <li><Link href="/profile/example-user" className="hover:underline">Profile</Link></li>
+            <h5 className="font-bold text-zinc-900 dark:text-zinc-200 uppercase tracking-wider mb-3">
+              Marketplace Features
+            </h5>
+            <ul className="space-y-2">
+              <li className="flex items-center gap-1.5"><Video className="w-3 h-3 text-rose-500" /><Link href="/reels" className="hover:text-orange-600 transition-colors">Short Product Video Reels</Link></li>
+              <li><Link href="/sell" className="hover:text-orange-600 transition-colors">Sell Fast in 60 Seconds</Link></li>
+              <li><Link href="/search" className="hover:text-orange-600 transition-colors">Search & Filters</Link></li>
+              <li><Link href="/chats" className="hover:text-orange-600 transition-colors">Buyer–Seller Direct Chat</Link></li>
+              <li><Link href="/favourites" className="hover:text-orange-600 transition-colors">Saved Watchlist</Link></li>
+              <li><Link href="/profile/example-user" className="hover:text-orange-600 transition-colors">Seller Profile</Link></li>
             </ul>
           </div>
 
+          {/* Trust & Safety */}
           <div>
-            <h5 className="font-semibold text-zinc-900 dark:text-zinc-200 mb-2">Admin Console</h5>
-            <ul className="space-y-1">
-              <li><Link href="/admin" className="hover:underline">Dashboard</Link></li>
-              <li><Link href="/admin/users" className="hover:underline">Users</Link></li>
-              <li><Link href="/admin/listings" className="hover:underline">Listings</Link></li>
-              <li><Link href="/admin/reels" className="hover:underline">Reels</Link></li>
-              <li><Link href="/admin/reports" className="hover:underline">Reports</Link></li>
-              <li><Link href="/admin/categories" className="hover:underline">Categories</Link></li>
-              <li><Link href="/admin/verification" className="hover:underline">Verification</Link></li>
-              <li><Link href="/admin/audit-logs" className="hover:underline">Audit Logs</Link></li>
-            </ul>
+            <h5 className="font-bold text-zinc-900 dark:text-zinc-200 uppercase tracking-wider mb-3">
+              Trust & Safety
+            </h5>
+            <div className="p-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2 text-[11px] leading-relaxed">
+              <div className="flex items-center gap-1.5 font-bold text-zinc-900 dark:text-zinc-100">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                <span>Buyer Safety Rules</span>
+              </div>
+              <p className="text-zinc-500 dark:text-zinc-400">
+                Always meet sellers in safe public places. Inspect products thoroughly in person before making payments.
+              </p>
+              <p className="text-orange-600 dark:text-orange-400 font-semibold">
+                Never send advance token payments.
+              </p>
+            </div>
+            <div className="mt-3">
+              <Link href="/admin" className="text-[11px] text-purple-600 dark:text-purple-400 hover:underline inline-flex items-center gap-1">
+                <ShieldCheck className="w-3 h-3" />
+                <span>Admin Operations Console</span>
+              </Link>
+            </div>
           </div>
         </div>
 
-        <div className="mt-8 pt-4 border-t border-zinc-200 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between text-xs text-zinc-500 gap-2">
-          <p>© 2026 OLX Clone (Video-First Marketplace) • Phase 0 Active</p>
-          <p className="flex items-center gap-2">
-            <span>Target Launch: 5 Nov 2026</span>
-            <span>•</span>
-            <span className="text-amber-600 dark:text-amber-400 font-medium">Development Mode (No Auth Restrictions)</span>
-          </p>
+        {/* Bottom Banner */}
+        <div className="mt-10 pt-6 border-t border-zinc-200 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between text-xs text-zinc-500 gap-3">
+          <p>© 2026 Bazarr 360 - Free Video-First Marketplace for India</p>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-medium text-[11px] border border-emerald-500/20">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Phase 3 Launch Ready
+            </span>
+          </div>
         </div>
       </div>
     </footer>

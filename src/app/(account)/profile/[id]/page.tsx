@@ -1,42 +1,117 @@
-import React, { Suspense } from 'react';
-import { PlaceholderPage } from '@/components/ui/PlaceholderPage';
+import * as React from 'react';
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { usersService } from '@/features/users/usersService';
+import { reelsService, mapBackendReelToReelItem } from '@/features/reels/reelsService';
+import { ProfileView } from '@/components/profile/ProfileView';
+import { PageContainer } from '@/components/ui/page-container';
+import { ErrorState } from '@/components/ui/state-views';
+import { ReelItem } from '@/types/reel';
+import { ListingItem } from '@/types/listing';
+import { getProfileCanonicalUrl } from '@/lib/share';
+import { env } from '@/lib/env';
 
 interface ProfilePageProps {
   params: Promise<{ id: string }>;
 }
 
-async function ProfileContent({ params }: ProfilePageProps) {
-  const { id } = await params;
-  const formattedUsername = id.replace(/[-_]/g, ' ');
+export async function generateMetadata(props: ProfilePageProps): Promise<Metadata> {
+  const { id } = await props.params;
+  const canonicalUrl = getProfileCanonicalUrl(id);
 
-  return (
-    <PlaceholderPage
-      title={`User Profile: ${formattedUsername}`}
-      description="Public seller profile showing member badge, verification tier, active listings count, published reels, and customer feedback."
-      category="account"
-      routePath={`/profile/${id}`}
-      params={{ id }}
-      plannedFeatures={[
-        'Seller trust badge, member-since date, and verified phone badge',
-        'Active catalog tab showing user listings with live statuses',
-        'Reels showcase tab with views and engagement counters',
-        'Public buyer reviews and community ratings',
-        'Account settings edit modal (when viewed by profile owner)'
-      ]}
-      quickLinks={[
-        { href: '/profile/example-user', label: 'Example User Profile' },
-        { href: '/profile/seller-priya-99', label: 'Seller Priya Profile' },
-        { href: '/chats', label: 'Chats' },
-        { href: '/sell', label: 'Post an Ad' }
-      ]}
-    />
-  );
+  try {
+    const publicUser = await usersService.getUserProfile(id);
+    if (!publicUser) {
+      return {
+        title: `Seller Not Found - ${env.appName}`,
+        description: `This seller profile does not exist or has been removed on ${env.appName}.`,
+        alternates: {
+          canonical: canonicalUrl,
+        },
+      };
+    }
+
+    const title = `${publicUser.name} - Seller Profile | ${env.appName}`;
+    const description = publicUser.bio || `View active ads and verified product reels for ${publicUser.name} on ${env.appName}.`;
+    const avatar = publicUser.avatarUrl || `${env.appUrl}/images/logo-1.png`;
+
+    return {
+      title,
+      description,
+      alternates: {
+        canonical: canonicalUrl,
+      },
+      openGraph: {
+        title,
+        description,
+        url: canonicalUrl,
+        siteName: env.appName,
+        images: [{ url: avatar, width: 800, height: 800, alt: publicUser.name }],
+      },
+      twitter: {
+        card: 'summary',
+        title,
+        description,
+      },
+    };
+  } catch {
+    return {
+      title: `Seller Not Found - ${env.appName}`,
+      description: `This seller profile does not exist or has been removed on ${env.appName}.`,
+      alternates: {
+        canonical: canonicalUrl,
+      },
+    };
+  }
 }
 
-export default function ProfilePage(props: ProfilePageProps) {
+export default async function ProfilePage(props: ProfilePageProps) {
+  const { id } = await props.params;
+
+  let publicUser = null;
+  try {
+    publicUser = await usersService.getUserProfile(id);
+  } catch {
+    publicUser = null;
+  }
+
+  if (!publicUser) {
+    return (
+      <PageContainer size="narrow" className="py-12 sm:py-20 pb-24 md:pb-12 text-center">
+        <ErrorState
+          status={404}
+          title="Seller Profile Not Found"
+          description={`We could not find a seller account for "${id}". This account may have been deleted or deactivated.`}
+        />
+        <div className="mt-6">
+          <Link
+            href="/"
+            className="inline-flex items-center px-5 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs sm:text-sm shadow-xs transition-all active:scale-95"
+          >
+            Explore Marketplace
+          </Link>
+        </div>
+      </PageContainer>
+    );
+  }
+
+  // Load real reels for this user from reelsService
+  let userReels: ReelItem[] = [];
+  try {
+    const reelsRes = await reelsService.getReels({ creatorId: publicUser.id, limit: 20 });
+    userReels = (reelsRes.data || []).map(mapBackendReelToReelItem);
+  } catch {
+    userReels = [];
+  }
+
+  // Real listings: Backend does not have an ownerId query filter on GET /api/v1/listings
+  const userListings: ListingItem[] = [];
+
   return (
-    <Suspense fallback={<div className="p-8 text-center text-sm text-zinc-500">Loading user profile...</div>}>
-      <ProfileContent {...props} />
-    </Suspense>
+    <ProfileView
+      user={publicUser}
+      listings={userListings}
+      reels={userReels}
+    />
   );
 }

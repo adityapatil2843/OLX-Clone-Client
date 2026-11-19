@@ -1,3 +1,7 @@
+# Client Agent Rules & Guidelines
+
+> Inherits universal rules from [../AGENTS.md](../AGENTS.md).
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know
