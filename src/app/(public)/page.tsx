@@ -26,8 +26,9 @@ import { ReelCard } from '@/components/reels/ReelCard';
 import { categoriesService, BackendCategory } from '@/features/marketplace/categoriesService';
 import { listingsService, mapBackendListingToListingItem } from '@/features/marketplace/listingsService';
 import { ListingItem } from '@/types/listing';
-import { CITIES_LIST } from '@/features/marketplace/mockData';
-import { MOCK_REELS } from '@/features/reels/mockData';
+import { POPULAR_CITIES } from '@/features/location/indiaLocations';
+import { reelsService, mapBackendReelToReelItem } from '@/features/reels/reelsService';
+import { ReelItem } from '@/types/reel';
 
 const CATEGORY_SLUG_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   vehicles: Car,
@@ -53,17 +54,22 @@ function getCategoryIcon(slug: string): React.ComponentType<{ className?: string
 export default function HomePage() {
   const [categories, setCategories] = React.useState<BackendCategory[]>([]);
   const [listings, setListings] = React.useState<ListingItem[]>([]);
+  const [reels, setReels] = React.useState<ReelItem[]>([]);
   const [isLoadingListings, setIsLoadingListings] = React.useState(true);
   const [isLoadingCategories, setIsLoadingCategories] = React.useState(true);
+  const [isLoadingReels, setIsLoadingReels] = React.useState(true);
   const [listingsError, setListingsError] = React.useState<unknown | null>(null);
   const [categoriesError, setCategoriesError] = React.useState<unknown | null>(null);
+  const [reelsError, setReelsError] = React.useState<unknown | null>(null);
   const [retryCount, setRetryCount] = React.useState(0);
 
   const handleRetry = React.useCallback(() => {
     setIsLoadingListings(true);
     setIsLoadingCategories(true);
+    setIsLoadingReels(true);
     setListingsError(null);
     setCategoriesError(null);
+    setReelsError(null);
     setRetryCount((c) => c + 1);
   }, []);
 
@@ -73,7 +79,8 @@ export default function HomePage() {
     Promise.allSettled([
       categoriesService.getCategories('tree'),
       listingsService.getListings({ limit: 8, sortBy: 'newest' }),
-    ]).then(([catResult, listResult]) => {
+      reelsService.getReels({ limit: 4 }),
+    ]).then(([catResult, listResult, reelsResult]) => {
       if (!isMounted) return;
 
       if (catResult.status === 'fulfilled') {
@@ -90,6 +97,14 @@ export default function HomePage() {
         setListingsError(listResult.reason);
       }
       setIsLoadingListings(false);
+
+      if (reelsResult.status === 'fulfilled') {
+        const reelItems = (reelsResult.value.data || []).map(mapBackendReelToReelItem);
+        setReels(reelItems);
+      } else {
+        setReelsError(reelsResult.reason);
+      }
+      setIsLoadingReels(false);
     });
 
     return () => {
@@ -185,7 +200,7 @@ export default function HomePage() {
                   defaultValue="All India"
                   className="w-full bg-transparent outline-none cursor-pointer text-xs"
                 >
-                  {CITIES_LIST.map((city) => (
+                  {POPULAR_CITIES.map((city) => (
                     <option key={city} value={city} className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-900">
                       {city}
                     </option>
@@ -314,21 +329,42 @@ export default function HomePage() {
             </Link>
           </div>
 
-          {/* Mobile Horizontal Carousel */}
-          <div className="md:hidden flex gap-3 overflow-x-auto pb-3 -mx-3.5 px-3.5 snap-x snap-mandatory scrollbar-none">
-            {MOCK_REELS.map((reel) => (
-              <div key={reel.id} className="snap-start shrink-0 w-[170px]">
-                <ReelCard reel={reel} />
+          {isLoadingReels ? (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-pulse">
+              {Array.from({ length: 4 }).map((_, idx) => (
+                <div key={idx} className="aspect-[9/16] rounded-2xl bg-zinc-800/80" />
+              ))}
+            </div>
+          ) : reelsError ? (
+            <div className="p-6 text-center rounded-2xl bg-zinc-800/40 border border-zinc-800 text-zinc-400">
+              <p className="text-xs">Product reels temporarily unavailable</p>
+            </div>
+          ) : reels.length === 0 ? (
+            <div className="p-8 text-center rounded-2xl bg-zinc-800/40 border border-zinc-800 text-zinc-400 space-y-2">
+              <p className="text-xs sm:text-sm">No video reels available yet.</p>
+              <Link href="/sell" className="inline-block text-xs font-bold text-orange-400 hover:underline">
+                Upload your product reel →
+              </Link>
+            </div>
+          ) : (
+            <>
+              {/* Mobile Horizontal Carousel */}
+              <div className="md:hidden flex gap-3 overflow-x-auto pb-3 -mx-3.5 px-3.5 snap-x snap-mandatory scrollbar-none">
+                {reels.map((reel) => (
+                  <div key={reel.id} className="snap-start shrink-0 w-[170px]">
+                    <ReelCard reel={reel} />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          {/* Desktop Multi-column Grid */}
-          <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {MOCK_REELS.map((reel) => (
-              <ReelCard key={reel.id} reel={reel} />
-            ))}
-          </div>
+              {/* Desktop Multi-column Grid */}
+              <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {reels.map((reel) => (
+                  <ReelCard key={reel.id} reel={reel} />
+                ))}
+              </div>
+            </>
+          )}
         </PageContainer>
       </section>
 

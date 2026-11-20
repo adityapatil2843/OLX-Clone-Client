@@ -27,6 +27,7 @@ import { ReelItem } from '@/types/reel';
 import { ReelCard } from '@/components/reels/ReelCard';
 import { getListingCanonicalUrl, shareContent } from '@/lib/share';
 import { useAuthStore } from '@/features/auth/useAuthStore';
+import { wishlistService } from '@/features/marketplace/wishlistService';
 import { AuthPromptModal } from '@/components/ui/state-views';
 import { BoostModal } from '@/components/boost/BoostModal';
 
@@ -48,18 +49,35 @@ export const ListingDetailView: React.FC<ListingDetailViewProps> = ({
   const isOwner = Boolean(currentUser?.id && currentUser.id === listing.seller.id);
   const [activeImageIndex, setActiveImageIndex] = React.useState(0);
   const [isWishlisted, setIsWishlisted] = React.useState(Boolean(listing.isWishlisted));
+  const [isUpdatingWishlist, setIsUpdatingWishlist] = React.useState(false);
   const [shareFeedback, setShareFeedback] = React.useState<string | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
   const [isBoostModalOpen, setIsBoostModalOpen] = React.useState(false);
   const [authPromptReason, setAuthPromptReason] = React.useState('');
 
-  const handleToggleWishlist = () => {
+  const handleToggleWishlist = async () => {
     if (!isAuthenticated) {
       setAuthPromptReason('Sign in to save this listing to your favourites.');
       setIsAuthModalOpen(true);
       return;
     }
-    setIsWishlisted((prev) => !prev);
+    if (isUpdatingWishlist) return;
+
+    const previousState = isWishlisted;
+    setIsWishlisted(!previousState);
+    setIsUpdatingWishlist(true);
+
+    try {
+      if (previousState) {
+        await wishlistService.removeFromWishlist(listing.id);
+      } else {
+        await wishlistService.addToWishlist(listing.id);
+      }
+    } catch {
+      setIsWishlisted(previousState);
+    } finally {
+      setIsUpdatingWishlist(false);
+    }
   };
 
   const handleChatClick = (e: React.MouseEvent) => {
@@ -322,7 +340,11 @@ export const ListingDetailView: React.FC<ListingDetailViewProps> = ({
                   </Button>
                 ) : (
                   <>
-                    <Link href="/chats" onClick={handleChatClick} className="block w-full">
+                    <Link
+                      href={`/chats?recipientId=${encodeURIComponent(listing.seller.id)}&listingId=${encodeURIComponent(listing.id)}`}
+                      onClick={handleChatClick}
+                      className="block w-full"
+                    >
                       <Button
                         className="w-full bg-gradient-to-r from-orange-600 to-amber-500 hover:from-orange-700 hover:to-amber-600 text-white font-bold py-2.5 rounded-xl shadow-xs flex items-center justify-center gap-2"
                       >
@@ -452,7 +474,7 @@ export const ListingDetailView: React.FC<ListingDetailViewProps> = ({
               </button>
 
               <Link
-                href="/chats"
+                href={`/chats?recipientId=${encodeURIComponent(listing.seller.id)}&listingId=${encodeURIComponent(listing.id)}`}
                 onClick={handleChatClick}
                 className="flex-1 py-3 px-3 rounded-xl bg-gradient-to-r from-orange-600 to-amber-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-transform"
               >

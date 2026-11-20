@@ -8,6 +8,8 @@ import { ListingItem } from '../../types/listing';
 import { Badge } from '../ui/badge';
 import { cn } from '../../lib/utils';
 import { formatINR, formatRelativeDate } from '../../lib/formatters';
+import { wishlistService } from '@/features/marketplace/wishlistService';
+import { useAuthStore } from '@/features/auth/useAuthStore';
 
 export { formatINR, formatRelativeDate };
 
@@ -22,17 +24,36 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   className,
   priority = false,
 }) => {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const [isWishlisted, setIsWishlisted] = React.useState(Boolean(listing.isWishlisted));
+  const [isUpdatingWishlist, setIsUpdatingWishlist] = React.useState(false);
   const [imageError, setImageError] = React.useState(false);
 
   const primaryMedia = listing.media?.[0];
   const imageUrl = primaryMedia?.url || primaryMedia?.thumbnailUrl;
   const hasVideo = listing.media?.some((m) => m.type === 'video');
 
-  const handleToggleWishlist = (e: React.MouseEvent) => {
+  const handleToggleWishlist = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsWishlisted((prev) => !prev);
+    if (!isAuthenticated || isUpdatingWishlist) return;
+
+    const previousState = isWishlisted;
+    setIsWishlisted(!previousState);
+    setIsUpdatingWishlist(true);
+
+    try {
+      if (previousState) {
+        await wishlistService.removeFromWishlist(listing.id);
+      } else {
+        await wishlistService.addToWishlist(listing.id);
+      }
+    } catch {
+      // Rollback on failure
+      setIsWishlisted(previousState);
+    } finally {
+      setIsUpdatingWishlist(false);
+    }
   };
 
   return (

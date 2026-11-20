@@ -18,8 +18,6 @@ export const Footer: React.FC = () => {
               <li><Link href="/categories/electronics" className="hover:text-orange-600 transition-colors">Laptops & Electronics</Link></li>
               <li><Link href="/categories/properties" className="hover:text-orange-600 transition-colors">Flats & Houses for Sale</Link></li>
               <li><Link href="/categories/furniture" className="hover:text-orange-600 transition-colors">Home & Office Furniture</Link></li>
-              <li><Link href="/jobs" className="hover:text-orange-600 transition-colors">Jobs & Hiring</Link></li>
-              <li><Link href="/services" className="hover:text-orange-600 transition-colors">Home Services & Movers</Link></li>
             </ul>
           </div>
 
@@ -69,12 +67,6 @@ export const Footer: React.FC = () => {
               <p className="text-orange-600 dark:text-orange-400 font-semibold">
                 Never send advance token payments.
               </p>
-            </div>
-            <div className="mt-3">
-              <Link href="/admin" className="text-[11px] text-purple-600 dark:text-purple-400 hover:underline inline-flex items-center gap-1">
-                <ShieldCheck className="w-3 h-3" />
-                <span>Admin Operations Console</span>
-              </Link>
             </div>
           </div>
         </div>

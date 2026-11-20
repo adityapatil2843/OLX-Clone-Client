@@ -10,19 +10,19 @@ import {
   PlusCircle, 
   MessageSquare, 
   Heart, 
-  ShieldCheck, 
-  Briefcase, 
-  Wrench,
   User,
   MapPin,
   ChevronDown,
   Bell,
-  Coins
+  Coins,
+  LogOut
 } from 'lucide-react';
 import { LocationSelectorModal } from '@/components/location/LocationSelectorModal';
+import { useAuthStore } from '@/features/auth/useAuthStore';
 
 export const Header: React.FC = () => {
   const router = useRouter();
+  const { user, isAuthenticated, logout } = useAuthStore();
   const [selectedCity, setSelectedCity] = React.useState('All India');
   const [selectedState, setSelectedState] = React.useState('');
   const [isLocationModalOpen, setIsLocationModalOpen] = React.useState(false);
@@ -122,6 +122,23 @@ export const Header: React.FC = () => {
           >
             <Heart className="w-4 h-4" />
           </Link>
+          {isAuthenticated ? (
+            <Link
+              href={`/profile/${user?.id || 'me'}`}
+              aria-label="User Account"
+              className="p-2 text-zinc-700 dark:text-zinc-300 hover:text-orange-600 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+            >
+              <User className="w-4 h-4 text-orange-600" />
+            </Link>
+          ) : (
+            <Link
+              href="/login"
+              aria-label="Sign In"
+              className="p-1 px-2 text-[11px] font-bold text-orange-600 rounded-lg bg-orange-50 dark:bg-orange-950/40"
+            >
+              Login
+            </Link>
+          )}
         </div>
       </div>
 
@@ -230,23 +247,35 @@ export const Header: React.FC = () => {
               <span>Wallet</span>
             </Link>
 
-            <Link
-              href="/profile/example-user"
-              title="User Account"
-              className="p-2 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
-            >
-              <User className="w-4 h-4" />
-              <span className="sr-only">Account</span>
-            </Link>
-
-            {/* Admin Console Link (Desktop only) */}
-            <Link
-              href="/admin"
-              className="hidden xl:inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg border border-purple-200 dark:border-purple-900/50 bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 hover:bg-purple-100 transition-colors"
-            >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Admin</span>
-            </Link>
+            {isAuthenticated ? (
+              <div className="flex items-center gap-1">
+                <Link
+                  href={`/profile/${user?.id || 'me'}`}
+                  title={user?.name ? `${user.name}'s Profile` : 'User Account'}
+                  className="flex items-center gap-1.5 p-1.5 px-2.5 text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors text-xs font-bold"
+                >
+                  <User className="w-3.5 h-3.5 text-orange-600" />
+                  <span className="truncate max-w-[80px]">{user?.name ? user.name.split(' ')[0] : 'Profile'}</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => logout()}
+                  title="Sign Out"
+                  aria-label="Sign Out"
+                  className="p-1.5 text-zinc-500 hover:text-rose-600 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-xl border border-zinc-200 dark:border-zinc-700 hover:border-orange-500 text-zinc-800 dark:text-zinc-200 hover:text-orange-600 transition-colors"
+              >
+                <User className="w-3.5 h-3.5" />
+                <span>Sign In</span>
+              </Link>
+            )}
 
             {/* Sell Action Button */}
             <Link
@@ -275,14 +304,6 @@ export const Header: React.FC = () => {
           </Link>
           <Link href="/categories/furniture" className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
             Furniture
-          </Link>
-          <Link href="/jobs" className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors flex items-center gap-1">
-            <Briefcase className="w-3 h-3 text-amber-500" />
-            <span>Jobs</span>
-          </Link>
-          <Link href="/services" className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors flex items-center gap-1">
-            <Wrench className="w-3 h-3 text-cyan-500" />
-            <span>Services</span>
           </Link>
           <div className="ml-auto flex items-center gap-1 text-[11px] text-zinc-400">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />

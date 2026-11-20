@@ -3,6 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 import { 
   MessageSquare, 
   Send, 
@@ -18,7 +19,11 @@ import { useAuthStore } from '@/features/auth/useAuthStore';
 import { EmptyState, ErrorState } from '@/components/ui/state-views';
 import { chatService, ConversationSummary, ChatMessage } from '@/features/chat/chatService';
 
-export default function ChatsPage() {
+function ChatsContent() {
+  const searchParams = useSearchParams();
+  const recipientId = searchParams.get('recipientId');
+  const listingId = searchParams.get('listingId');
+
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const currentUser = useAuthStore((s) => s.user);
 
@@ -51,31 +56,66 @@ export default function ChatsPage() {
     }
   }, [isAuthenticated]);
 
-  // Initial load effect
+  // Initial load and auto-open thread from query params
   React.useEffect(() => {
     if (!isAuthenticated) return;
     let ignore = false;
 
-    chatService.getConversations(1, 30)
-      .then((res) => {
-        if (!ignore) {
-          setConversations(res.data || []);
-          if (res.data && res.data.length > 0) {
-            setSelectedChatId((prev) => prev || res.data[0].id);
+    const initChats = async () => {
+      setIsLoadingConversations(true);
+      try {
+        const res = await chatService.getConversations(1, 30);
+        let list = res.data || [];
+
+        // If user navigated from listing page with recipientId
+        if (recipientId) {
+          const existing = list.find(
+            (c) =>
+              (listingId ? c.listingId === listingId : true) &&
+              c.participants?.some((p) => p.userId === recipientId)
+          );
+
+          if (existing) {
+            setSelectedChatId(existing.id);
+            setMobileView('thread');
+          } else {
+            // Create conversation with seller
+            try {
+              const newConv = await chatService.getOrCreateConversation(recipientId, listingId || undefined);
+              if (newConv.data && !ignore) {
+                list = [newConv.data, ...list.filter((c) => c.id !== newConv.data.id)];
+                setSelectedChatId(newConv.data.id);
+                setMobileView('thread');
+              }
+            } catch (createErr) {
+              console.warn('Failed to auto-create conversation:', createErr);
+            }
           }
+        } else if (list.length > 0) {
+          setSelectedChatId((prev) => prev || list[0].id);
         }
-      })
-      .catch((err) => {
+
+        if (!ignore) {
+          setConversations(list);
+        }
+      } catch (err: unknown) {
         if (!ignore) {
           console.warn('Could not load conversations from server:', err);
           setError('Could not connect to conversation service. Please try again.');
         }
-      });
+      } finally {
+        if (!ignore) {
+          setIsLoadingConversations(false);
+        }
+      }
+    };
+
+    initChats();
 
     return () => {
       ignore = true;
     };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, recipientId, listingId]);
 
   // Load messages when selectedChatId changes
   React.useEffect(() => {
@@ -397,5 +437,19 @@ export default function ChatsPage() {
         </div>
       )}
     </PageContainer>
+  );
+}
+
+export default function ChatsPage() {
+  return (
+    <React.Suspense
+      fallback={
+        <PageContainer size="wide" className="py-12 flex items-center justify-center text-zinc-400">
+          <Loader2 className="w-8 h-8 animate-spin text-orange-600" />
+        </PageContainer>
+      }
+    >
+      <ChatsContent />
+    </React.Suspense>
   );
 }

@@ -9,11 +9,6 @@ import { cn } from '../../lib/utils';
 export const BottomNav: React.FC = () => {
   const pathname = usePathname();
 
-  // Hide on admin routes
-  if (pathname.startsWith('/admin')) {
-    return null;
-  }
-
   const navItems = [
     { href: '/', label: 'Home', icon: Home, exact: true },
     { href: '/search', label: 'Explore', icon: Search },
