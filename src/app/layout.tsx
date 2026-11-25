@@ -1,10 +1,8 @@
-import React, { Suspense } from "react";
-import type { Metadata } from "next";
+import React from "react";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { BottomNav } from "@/components/layout/BottomNav";
+import { AppChrome } from "@/components/layout/AppChrome";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { env } from "@/lib/env";
 
@@ -17,6 +15,12 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.appUrl),
@@ -44,12 +48,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-zinc-50/50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50">
         <AuthProvider>
-          <Header />
-          <main className="flex-1 flex flex-col">{children}</main>
-          <Footer />
-          <Suspense fallback={null}>
-            <BottomNav />
-          </Suspense>
+          <AppChrome>{children}</AppChrome>
         </AuthProvider>
       </body>
     </html>

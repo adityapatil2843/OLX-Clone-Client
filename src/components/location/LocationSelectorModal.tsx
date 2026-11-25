@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { createPortal } from 'react-dom';
 import { X, MapPin, Search, Check, Navigation, RotateCcw } from 'lucide-react';
 import { INDIAN_STATES, POPULAR_CITIES, getCitiesForState, searchCitiesAndStates } from '@/features/location/indiaLocations';
 
@@ -22,6 +23,15 @@ const LocationSelectorModalContent: React.FC<Omit<LocationSelectorModalProps, 'i
   const [activeState, setActiveState] = React.useState(selectedState || '');
   const [gpsLoading, setGpsLoading] = React.useState(false);
   const [gpsError, setGpsError] = React.useState<string | null>(null);
+
+  // Lock body scroll while modal is open
+  React.useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
 
   // Handle ESC key
   React.useEffect(() => {
@@ -96,7 +106,7 @@ const LocationSelectorModalContent: React.FC<Omit<LocationSelectorModalProps, 'i
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Select Browsing Location"
+        aria-labelledby="location-modal-title"
         className="fixed inset-x-0 bottom-0 z-50 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 w-full md:max-w-lg bg-white dark:bg-zinc-900 rounded-t-3xl md:rounded-3xl shadow-2xl border border-zinc-200 dark:border-zinc-800 flex flex-col max-h-[85vh] md:max-h-[600px] overflow-hidden animate-slide-up"
       >
         {/* Mobile Drag Indicator */}
@@ -108,7 +118,7 @@ const LocationSelectorModalContent: React.FC<Omit<LocationSelectorModalProps, 'i
         <div className="flex items-center justify-between px-5 py-3 border-b border-zinc-100 dark:border-zinc-800">
           <div className="flex items-center gap-2">
             <MapPin className="w-4 h-4 text-orange-600" />
-            <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">
+            <h2 id="location-modal-title" className="text-sm font-bold text-zinc-900 dark:text-zinc-50">
               Select Location
             </h2>
           </div>
@@ -320,6 +330,16 @@ const LocationSelectorModalContent: React.FC<Omit<LocationSelectorModalProps, 'i
 };
 
 export const LocationSelectorModal: React.FC<LocationSelectorModalProps> = (props) => {
-  if (!props.isOpen) return null;
-  return <LocationSelectorModalContent {...props} />;
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!props.isOpen || !mounted) return null;
+
+  return createPortal(
+    <LocationSelectorModalContent {...props} />,
+    document.body
+  );
 };

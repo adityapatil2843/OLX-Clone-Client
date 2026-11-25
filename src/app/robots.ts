@@ -17,6 +17,12 @@ export default function robots(): MetadataRoute.Robots {
           '/reels/*',
           '/profile/*',
           '/business/*',
+          '/privacy-policy',
+          '/terms-and-conditions',
+          '/refund-policy',
+          '/cookie-policy',
+          '/contact-us',
+          '/delete-account',
         ],
         disallow: [
           '/chats',

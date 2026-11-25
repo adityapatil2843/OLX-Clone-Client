@@ -57,7 +57,7 @@ export const Header: React.FC = () => {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md">
       {/* ── MOBILE TOP BAR (320px - 767px) ── */}
-      <div className="md:hidden flex items-center justify-between h-14 px-3 sm:px-4 gap-2">
+      <div className="md:hidden flex items-center justify-between h-14 px-3 sm:px-4 gap-1.5 sm:gap-2 w-full max-w-full">
         {/* Brand with Official Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <div className="relative w-8 h-8 rounded-lg overflow-hidden shrink-0 shadow-xs border border-orange-500/20">
@@ -85,7 +85,7 @@ export const Header: React.FC = () => {
           type="button"
           onClick={() => setIsLocationModalOpen(true)}
           aria-label={`Browsing location: ${selectedCity}${selectedState ? `, ${selectedState}` : ''}. Click to change.`}
-          className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[11px] font-semibold text-zinc-800 dark:text-zinc-200 max-w-[130px] active:scale-95 transition-transform"
+          className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[11px] font-semibold text-zinc-800 dark:text-zinc-200 max-w-[105px] min-w-0 shrink active:scale-95 transition-transform"
         >
           <MapPin className="w-3 h-3 text-orange-600 shrink-0" />
           <span className="truncate text-[11px] font-medium">{selectedCity}</span>
@@ -93,32 +93,32 @@ export const Header: React.FC = () => {
         </button>
 
         {/* Mobile Action Shortcuts */}
-        <div className="flex items-center gap-1 shrink-0">
+        <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
           <Link
             href="/search"
             aria-label="Search Marketplace"
-            className="p-2 text-zinc-700 dark:text-zinc-300 hover:text-orange-600 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+            className="hidden sm:inline-flex p-1.5 text-zinc-700 dark:text-zinc-300 hover:text-orange-600 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
           >
             <Search className="w-4 h-4" />
           </Link>
           <Link
             href="/notifications"
             aria-label="Notifications"
-            className="p-2 text-zinc-700 dark:text-zinc-300 hover:text-orange-600 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors relative"
+            className="p-1.5 text-zinc-700 dark:text-zinc-300 hover:text-orange-600 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors relative"
           >
             <Bell className="w-4 h-4" />
           </Link>
           <Link
             href="/wallet"
             aria-label="Wallet and Coins"
-            className="p-2 text-zinc-700 dark:text-zinc-300 hover:text-amber-500 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+            className="hidden min-[400px]:inline-flex p-1.5 text-zinc-700 dark:text-zinc-300 hover:text-amber-500 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
           >
             <Coins className="w-4 h-4 text-amber-500" />
           </Link>
           <Link
             href="/favourites"
             aria-label="Saved Favourites"
-            className="p-2 text-zinc-700 dark:text-zinc-300 hover:text-rose-500 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+            className="p-1.5 text-zinc-700 dark:text-zinc-300 hover:text-rose-500 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
           >
             <Heart className="w-4 h-4" />
           </Link>
@@ -126,7 +126,7 @@ export const Header: React.FC = () => {
             <Link
               href={`/profile/${user?.id || 'me'}`}
               aria-label="User Account"
-              className="p-2 text-zinc-700 dark:text-zinc-300 hover:text-orange-600 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+              className="p-1.5 text-zinc-700 dark:text-zinc-300 hover:text-orange-600 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
             >
               <User className="w-4 h-4 text-orange-600" />
             </Link>

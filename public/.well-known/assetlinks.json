@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.bazaar360.app",
+      "sha256_cert_fingerprints": [
+        "01:30:BC:1F:DF:DC:B4:07:A2:47:63:FE:42:02:70:F1:4D:15:C6:E4:BE:60:BC:67:6E:BB:BC:61:F4:73:E8:97"
+      ]
+    }
+  }
+]

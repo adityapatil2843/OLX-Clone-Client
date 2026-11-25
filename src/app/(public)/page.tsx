@@ -2,22 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { 
-  Search, 
-  MapPin, 
-  Film, 
-  PlusCircle, 
-  Car, 
-  Smartphone, 
-  Tv, 
-  Home as HomeIcon, 
-  Armchair, 
-  Shirt, 
-  Briefcase, 
-  Wrench, 
-  ChevronRight,
-  Tag
-} from 'lucide-react';
+import { Search, MapPin, Film, PlusCircle, Car, Smartphone, Tv, Home as HomeIcon, Armchair, Shirt, Briefcase, Wrench, ChevronRight,Tag} from 'lucide-react';
 import { PageContainer } from '@/components/ui/page-container';
 import { SectionHeading } from '@/components/ui/section-heading';
 import { ListingGrid } from '@/components/listings/ListingGrid';
@@ -28,6 +13,7 @@ import { listingsService, mapBackendListingToListingItem } from '@/features/mark
 import { ListingItem } from '@/types/listing';
 import { POPULAR_CITIES } from '@/features/location/indiaLocations';
 import { reelsService, mapBackendReelToReelItem } from '@/features/reels/reelsService';
+import { MOCK_REELS } from '@/features/reels/mockData';
 import { ReelItem } from '@/types/reel';
 
 const CATEGORY_SLUG_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -98,11 +84,11 @@ export default function HomePage() {
       }
       setIsLoadingListings(false);
 
-      if (reelsResult.status === 'fulfilled') {
-        const reelItems = (reelsResult.value.data || []).map(mapBackendReelToReelItem);
+      if (reelsResult.status === 'fulfilled' && reelsResult.value.data && reelsResult.value.data.length > 0) {
+        const reelItems = reelsResult.value.data.map(mapBackendReelToReelItem);
         setReels(reelItems);
       } else {
-        setReelsError(reelsResult.reason);
+        setReels(MOCK_REELS.slice(0, 4));
       }
       setIsLoadingReels(false);
     });
@@ -116,9 +102,9 @@ export default function HomePage() {
     <div className="w-full flex flex-col space-y-4 sm:space-y-8 pb-24 md:pb-12">
       <h1 className="sr-only">Bazarr 360 - India&apos;s Free Video-First Marketplace</h1>
 
-      {/* ── MOBILE SEARCH & QUICK ACTIONS (320px - 767px) ── */}
+       {/* ── MOBILE SEARCH & QUICK ACTIONS (320px - 767px) ──  */}
       <div className="md:hidden px-3.5 pt-2 pb-1 space-y-3">
-        {/* Mobile Search Input */}
+        
         <form
           action="/search"
           method="GET"
@@ -141,7 +127,7 @@ export default function HomePage() {
           </button>
         </form>
 
-        {/* Mobile Category Shortcuts - Horizontal App Bar */}
+         {/* Mobile Category Shortcuts - Horizontal App Bar  */}
         <div className="flex items-center gap-3 overflow-x-auto pb-1 scrollbar-none -mx-3.5 px-3.5">
           {isLoadingCategories ? (
             Array.from({ length: 6 }).map((_, idx) => (
@@ -177,12 +163,12 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(232,93,4,0.18),transparent_50%)] pointer-events-none" />
         <PageContainer className="relative z-10 space-y-6">
           <div className="max-w-3xl space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 text-xs font-bold tracking-wide uppercase">
+            {/* <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 text-xs font-bold tracking-wide uppercase">
               <Film className="w-3.5 h-3.5" />
               <span>India&apos;s First Video Marketplace</span>
-            </div>
+            </div> */}
             <h1 className="text-3xl lg:text-5xl font-black tracking-tight leading-tight">
-              Buy, Sell & Discover with <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500">Short Video Reels</span>
+              Buy, Sell & Discover with <span className="text-orange-500">Short Video Reels</span>
             </h1>
             <p className="text-sm text-zinc-300 max-w-2xl leading-relaxed">
               Experience pre-owned cars, phones, laptops, and properties in authentic 60-second video tours before making direct contact with local verified sellers.

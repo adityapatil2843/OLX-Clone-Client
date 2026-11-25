@@ -1,0 +1,26 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "REPLACE_WITH_APPLE_TEAM_ID.com.bazaar360.app",
+        "paths": [
+          "/reels/*"
+        ],
+        "components": [
+          {
+            "/": "/reels/*",
+            "comment": "Matches reel deep links on bazarr360.in"
+          }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "REPLACE_WITH_APPLE_TEAM_ID.com.bazaar360.app"
+    ]
+  }
+}
+
+
